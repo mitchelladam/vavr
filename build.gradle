@@ -23,6 +23,7 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'maven'
+apply plugin: 'scala'
 apply plugin: 'signing'
 
 ext.jmhVersion = '1.21'
@@ -32,6 +33,12 @@ repositories {
     mavenLocal()
     mavenCentral()
 }
+
+task generateSources() {
+    println "hello"
+}
+
+compileJava.dependsOn("generateSources")
 
 compileJava {
     sourceCompatibility = 8
