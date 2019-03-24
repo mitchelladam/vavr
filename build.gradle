@@ -25,6 +25,7 @@ apply plugin: 'jacoco'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+ext.ammoniteVersion = '1.6.5'
 ext.jmhVersion = '1.21'
 ext.junitVersion = '5.5.0-M1'
 
@@ -32,6 +33,27 @@ repositories {
     mavenLocal()
     mavenCentral()
 }
+
+ext.ammoniteVersion = '1.6.5'
+ext.scalaVersion = '2.12'
+
+task generateSources() {
+    def targetDir = file("generator/bin")
+    if (!targetDir.exists()) {
+        targetDir.mkdirs()
+    }
+    def targetFile = new File(targetDir, "amm-${scalaVersion}-${ammoniteVersion}.jar")
+    if (!targetFile.exists()) {
+        def sourceUrl = "https://github.com/lihaoyi/Ammonite/releases/download/${ammoniteVersion}/${scalaVersion}-${ammoniteVersion}"
+        ant.get(src: sourceUrl, dest: targetFile)
+    }
+    javaexec {
+        main = "-jar"
+        args = [targetFile, "generator/Generator.sc"]
+    }
+}
+
+compileJava.dependsOn("generateSources")
 
 compileJava {
     sourceCompatibility = 8
