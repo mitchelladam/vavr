@@ -833,6 +833,43 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of("a", "b", "c").foldLeft("!", (xs, x) -> xs + x)).isEqualTo("!abc");
     }
 
+    // -- foldLeftUntil
+
+    @Test
+    public void shouldFoldLeftUntilNil() {
+        assertThat(this.<String> empty().foldLeftUntil("", (xs, x) -> xs + x, xs->false)).isEqualTo("");
+    }
+
+    @Test
+    public void shouldFoldLeftUntilNilInverse() {
+        assertThat(this.<String> empty().foldLeftUntil("", (xs, x) -> xs + x, xs->true)).isEqualTo("");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenFoldLeftUntilNullOperator() {
+        this.<String> empty().foldLeftUntil(null, null, a->true);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenFoldLeftUntilNullPredicate() {
+        this.<String> empty().foldLeftUntil(null, (a,b)->a, null);
+    }
+
+    @Test
+    public void shouldFoldLeftUntilNonNil() {
+        assertThat(of("a", "b", "c").foldLeftUntil("!", (xs, x) -> xs + x, xs->xs.contains("b"))).isEqualTo("!ab");
+    }
+
+    @Test
+    public void shouldFoldLeftUntilNonNilNoEarlyTermination() {
+        assertThat(of("a", "b", "c").foldLeftUntil("!", (xs, x) -> xs + x, xs->xs.contains("z"))).isEqualTo("!abc");
+    }
+
+    @Test
+    public void shouldFoldLeftUntilNonNilImmediateTermination() {
+        assertThat(of("a", "b", "c").foldLeftUntil("!", (xs, x) -> xs + x, xs->true)).isEqualTo("!");
+    }
+
     // -- foldRight
 
     @Test

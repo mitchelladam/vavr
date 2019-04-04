@@ -24,6 +24,7 @@ import io.vavr.control.Option;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 /**
  * Interface of foldable data structures.
@@ -96,6 +97,46 @@ public interface Foldable<T> {
      * @throws NullPointerException if {@code combine} is null
      */
     <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine);
+
+    /**
+     * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}
+     * while the condition {@code validator} returns true.
+     *
+     * <p>
+     * Example:
+     *
+     * <pre> {@code
+     * // = "ba!"
+     * List("a", "b", "c").foldLeftWhile("!", (xs, x) -> x + xs, xs -> !xs.contains("b"))
+     * } </pre>
+     *
+     * @param <U>     the type to fold over
+     * @param zero    A zero element to start with.
+     * @param combine A function which combines elements.
+     * @return a folded value
+     * @throws NullPointerException if {@code combine} or {@code validator} are null
+     */
+    <U> U foldLeftWhile(U zero, BiFunction<? super U, ? super T, ? extends U> combine, Predicate<U> validator);
+
+    /**
+     * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}
+     * until the condition {@code terminator} returns true.
+     *
+     * <p>
+     * Example:
+     *
+     * <pre> {@code
+     * // = "ba!"
+     * List("a", "b", "c").foldLeftUntil("!", (xs, x) -> x + xs, xs -> xs.contains("b"))
+     * } </pre>
+     *
+     * @param <U>     the type to fold over
+     * @param zero    A zero element to start with.
+     * @param combine A function which combines elements.
+     * @return a folded value
+     * @throws NullPointerException if {@code combine} or {@code terminator} are null
+     */
+    <U> U foldLeftUntil(U zero, BiFunction<? super U, ? super T, ? extends U> combine, Predicate<U> terminator);
 
     /**
      * Folds this elements from the right, starting with {@code zero} and successively calling {@code combine}.
